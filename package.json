@@ -31,7 +31,7 @@
             "dist/credentials/Media2URLApi.credentials.js"
         ],
         "nodes": [
-            "dist/nodes/Media2URL/Media2URL.node.js"
+            "dist/nodes/Media2URL/Media2Url.node.js"
         ]
     },
     "devDependencies": {
