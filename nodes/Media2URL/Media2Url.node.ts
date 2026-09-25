@@ -7,6 +7,7 @@ import type {
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { addItemIndexToNodeError, executeOperation } from './operations';
 
+// eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool -- AI Agent tool use is intentionally outside this integration's scope.
 export class Media2URL implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Media2URL',
@@ -60,6 +61,12 @@ export class Media2URL implements INodeType {
 					{ name: 'Get', value: 'get', action: 'Get an asset' },
 					{ name: 'Get Many', value: 'getMany', action: 'Get many assets' },
 					{ name: 'Import From URL', value: 'importFromUrl', action: 'Import a file from a URL' },
+					{
+						name: 'Replace',
+						value: 'replace',
+						action: 'Replace asset content',
+						description: 'Upload new contents as a version while keeping the current managed URL',
+					},
 					{ name: 'Upload Binary File', value: 'upload', action: 'Upload a binary file' },
 				],
 				default: 'getMany',
@@ -77,10 +84,10 @@ export class Media2URL implements INodeType {
 				displayName: 'Binary Property',
 				name: 'binaryPropertyName',
 				type: 'string',
-				displayOptions: { show: { resource: ['asset'], operation: ['upload'] } },
+				displayOptions: { show: { resource: ['asset'], operation: ['upload', 'replace'] } },
 				default: 'data',
-				placeholder: 'data',
-				description: 'Name of the incoming binary property to upload',
+				description: 'Name of the incoming binary property containing the file to upload or replace',
+				placeholder: 'e.g. data',
 			},
 			{
 				displayName: 'Source URL',
@@ -89,17 +96,17 @@ export class Media2URL implements INodeType {
 				required: true,
 				displayOptions: { show: { resource: ['asset'], operation: ['importFromUrl'] } },
 				default: '',
-				placeholder: 'https://example.com/image.png',
+				placeholder: 'e.g. https://example.com/image.png',
 				description: 'Public HTTP or HTTPS URL for Media2URL to fetch securely',
 			},
 			{
 				displayName: 'File Name',
 				name: 'filename',
 				type: 'string',
-				displayOptions: { show: { resource: ['asset'], operation: ['upload', 'importFromUrl'] } },
+				displayOptions: { show: { resource: ['asset'], operation: ['upload', 'importFromUrl', 'replace'] } },
 				default: '',
-				placeholder: 'Leave empty to use the incoming filename',
-				description: 'Optional destination filename to use instead of the incoming filename',
+				placeholder: 'e.g. release-v2.png (leave empty to use the incoming filename)',
+				description: 'Optional name for the file. If empty, the source filename is used.',
 			},
 			{
 				displayName: 'Privacy',
@@ -127,8 +134,18 @@ export class Media2URL implements INodeType {
 					},
 				},
 				default: '',
-				placeholder: 'asset_123',
-				description: 'The asset ID returned by Media2URL. Deletion removes the asset from your account.',
+				placeholder: 'e.g. asset_123',
+				description: 'ID of the Media2URL asset to retrieve or delete. Deleting it removes it from your account.',
+			},
+			{
+				displayName: 'Asset ID',
+				name: 'assetId',
+				type: 'string',
+				required: true,
+				displayOptions: { show: { resource: ['asset'], operation: ['replace'] } },
+				default: '',
+				placeholder: 'e.g. asset_123',
+				description: 'ID of the existing managed Media2URL asset. Replacement creates a new version at the same managed URL.',
 			},
 			{
 				displayName: 'Asset ID',
@@ -142,8 +159,8 @@ export class Media2URL implements INodeType {
 					},
 				},
 				default: '',
-				placeholder: 'asset_123',
-				description: 'The asset whose read-only version history you want to retrieve',
+				placeholder: 'e.g. asset_123',
+				description: 'ID of the asset whose read-only version history you want to retrieve',
 			},
 			{
 				displayName: 'Return All',

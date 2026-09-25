@@ -3,6 +3,7 @@ import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 import { requestMedia2Url } from './transport';
 import { executeImportFromUrl } from './imports';
 import { executeUploadBinary } from './uploads';
+import { executeReplaceAsset } from './replacement';
 
 interface AssetListResponse {
 	data: JsonObject[];
@@ -23,6 +24,7 @@ export type Media2UrlOperation =
 	| 'asset.delete'
 	| 'asset.upload'
 	| 'asset.importFromUrl'
+	| 'asset.replace'
 	| 'version.getMany';
 
 const API_PAGE_SIZE = 100;
@@ -38,6 +40,7 @@ function getOperationKey(resource: string, operation: string): Media2UrlOperatio
 		key === 'asset.delete' ||
 		key === 'asset.upload' ||
 		key === 'asset.importFromUrl' ||
+		key === 'asset.replace' ||
 		key === 'version.getMany'
 	) {
 		return key;
@@ -139,6 +142,9 @@ export async function executeOperation(
 	}
 	if (operationKey === 'asset.importFromUrl') {
 		return executeImportFromUrl(context, inputItems, itemIndexOffset);
+	}
+	if (operationKey === 'asset.replace') {
+		return executeReplaceAsset(context, inputItems, itemIndexOffset);
 	}
 	const output: INodeExecutionData[] = [];
 	for (let inputIndex = 0; inputIndex < inputItems.length; inputIndex++) {
