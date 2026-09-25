@@ -8,6 +8,7 @@ const REQUEST_ID_PATTERN = /^[a-zA-Z0-9._:-]{1,128}$/;
 export interface Media2UrlRequestOptions {
 	method?: IHttpRequestOptions['method'];
 	qs?: IDataObject;
+	headers?: IDataObject;
 	body?: IHttpRequestOptions['body'];
 	itemIndex?: number;
 }
@@ -64,7 +65,8 @@ function readSafeErrorMetadata(error: unknown): SafeErrorMetadata {
 }
 
 function errorMessage(statusCode?: number): string {
-	if (statusCode === 401 || statusCode === 403) return 'Media2URL authentication failed. Check the API key in your n8n credentials.';
+	if (statusCode === 401) return 'Media2URL authentication failed. Check the API key in your n8n credentials.';
+	if (statusCode === 403) return 'Media2URL did not permit this operation. Check the API key scope, workspace role, and account plan.';
 	if (statusCode === 429) return 'Media2URL rate limit reached.';
 	if (statusCode !== undefined) return `Media2URL API request failed (HTTP ${statusCode}).`;
 	return 'Media2URL request could not be completed.';
@@ -135,6 +137,7 @@ export async function requestMedia2Url<T>(
 				baseURL: API_BASE_URL,
 				url: path,
 				method: requestOptions.method ?? 'GET',
+				headers: requestOptions.headers,
 				qs: requestOptions.qs,
 				body: requestOptions.body,
 				json: true,
@@ -159,4 +162,60 @@ export async function requestMedia2Url<T>(
 	const responseRecord = asRecord(response);
 	if (requestOptions.method === 'DELETE' && responseRecord?.statusCode === 204) return {} as T;
 	return parseResponseBody<T>(responseRecord && 'body' in responseRecord ? responseRecord.body : response, context, itemIndex);
+}
+
+export async function uploadToPresignedUrl(
+	context: IExecuteFunctions,
+	uploadUrl: string,
+	requiredHeaders: Record<string, unknown>,
+	data: Buffer,
+	itemIndex: number,
+): Promise<void> {
+	let parsedUrl: URL;
+	try {
+		parsedUrl = new URL(uploadUrl);
+	} catch {
+		throw new NodeOperationError(context.getNode(), 'Media2URL returned an invalid upload URL.', { itemIndex });
+	}
+	if (parsedUrl.protocol !== 'https:' || parsedUrl.username || parsedUrl.password || uploadUrl.length > 8192) {
+		throw new NodeOperationError(context.getNode(), 'Media2URL returned an unsafe upload URL.', { itemIndex });
+	}
+
+	const allowedHeaderNames = new Set(['content-type', 'x-amz-checksum-sha256']);
+	const headers: IDataObject = {};
+	for (const [name, value] of Object.entries(requiredHeaders)) {
+		if (!allowedHeaderNames.has(name.toLowerCase()) || typeof value !== 'string' || value.length > 256) {
+			throw new NodeOperationError(context.getNode(), 'Media2URL returned unsupported upload headers.', { itemIndex });
+		}
+		headers[name] = value;
+	}
+	if (typeof headers['Content-Type'] !== 'string' && typeof headers['content-type'] !== 'string') {
+		throw new NodeOperationError(context.getNode(), 'Media2URL did not provide the required upload content type.', { itemIndex });
+	}
+
+	let response: unknown;
+	try {
+		response = await context.helpers.httpRequest({
+			url: parsedUrl.toString(),
+			method: 'PUT',
+			headers,
+			body: data,
+			returnFullResponse: true,
+			json: false,
+			timeout: REQUEST_TIMEOUT_MS,
+			maxRedirects: 0,
+			disableFollowRedirect: true,
+			sendCredentialsOnCrossOriginRedirect: false,
+		});
+	} catch {
+		throw new NodeOperationError(context.getNode(), 'Direct upload to Media2URL storage failed. Try again later.', { itemIndex });
+	}
+	const responseRecord = asRecord(response);
+	const statusCode = safeStatus(responseRecord?.statusCode);
+	if (statusCode === undefined) {
+		throw new NodeOperationError(context.getNode(), 'Media2URL storage returned an invalid upload response.', { itemIndex });
+	}
+	if (statusCode < 200 || statusCode >= 300) {
+		throw new NodeOperationError(context.getNode(), `Media2URL storage upload failed (HTTP ${statusCode}).`, { itemIndex });
+	}
 }

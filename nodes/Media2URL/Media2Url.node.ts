@@ -59,6 +59,7 @@ export class Media2URL implements INodeType {
 					{ name: 'Get', value: 'get', action: 'Get an asset' },
 					{ name: 'Get Many', value: 'getMany', action: 'Get many assets' },
 					{ name: 'Delete', value: 'delete', action: 'Delete an asset' },
+					{ name: 'Upload Binary File', value: 'upload', action: 'Upload a binary file' },
 				],
 				default: 'getMany',
 			},
@@ -70,6 +71,38 @@ export class Media2URL implements INodeType {
 				displayOptions: { show: { resource: ['version'] } },
 				options: [{ name: 'Get Many', value: 'getMany', action: 'Get many asset versions' }],
 				default: 'getMany',
+			},
+			{
+				displayName: 'Binary Property',
+				name: 'binaryPropertyName',
+				type: 'string',
+				displayOptions: { show: { resource: ['asset'], operation: ['upload'] } },
+				default: 'data',
+				placeholder: 'data',
+				description: 'Name of the incoming binary property to upload',
+			},
+			{
+				displayName: 'File Name',
+				name: 'filename',
+				type: 'string',
+				displayOptions: { show: { resource: ['asset'], operation: ['upload'] } },
+				default: '',
+				placeholder: 'Leave empty to use the incoming filename',
+				description: 'Optional destination filename to use instead of the incoming binary filename',
+			},
+			{
+				displayName: 'Privacy',
+				name: 'privacy',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['asset'], operation: ['upload'] } },
+				options: [
+					{ name: 'Public', value: 'public' },
+					{ name: 'Unlisted', value: 'unlisted' },
+					{ name: 'Private', value: 'private' },
+				],
+				default: 'public',
+				description: 'Link visibility for the uploaded asset',
 			},
 			{
 				displayName: 'Asset ID',
@@ -130,6 +163,30 @@ export class Media2URL implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const inputItems = this.getInputData();
 		const output: INodeExecutionData[] = [];
+		if (
+			inputItems.length &&
+			this.getNodeParameter('resource', 0) === 'asset' &&
+			this.getNodeParameter('operation', 0) === 'upload'
+		) {
+			try {
+				return [await executeOperation(this, 'asset', 'upload', inputItems)];
+			} catch (error) {
+				const errorIndex =
+					error instanceof NodeApiError || error instanceof NodeOperationError
+						? typeof error.context.itemIndex === 'number'
+							? error.context.itemIndex
+							: 0
+						: 0;
+				if (this.continueOnFail()) {
+					const safeMessage =
+						error instanceof NodeOperationError || error instanceof NodeApiError
+							? error.message
+							: 'Media2URL operation failed.';
+					return [[{ json: { error: safeMessage }, pairedItem: { item: errorIndex } }]];
+				}
+				throw addItemIndexToNodeError(this, error, errorIndex);
+			}
+		}
 		for (let itemIndex = 0; itemIndex < inputItems.length; itemIndex++) {
 			try {
 				const resource = this.getNodeParameter('resource', itemIndex) as string;

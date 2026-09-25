@@ -36,6 +36,30 @@ test('204 responses are valid for DELETE requests with no response body', async 
 	assert.deepEqual(result, {});
 });
 
+test('presigned PUT failures do not expose the signed URL or attach bearer credentials', async () => {
+	const { uploadToPresignedUrl } = transport;
+	const signedUrl = 'https://storage.example/file?X-Amz-Signature=private-signature';
+	let requestOptions;
+	const context = makeContext(async () => undefined);
+	context.helpers.httpRequest = async (options) => {
+		requestOptions = options;
+		throw new Error(`upload failed ${signedUrl}`);
+	};
+	await assert.rejects(
+		uploadToPresignedUrl(context, signedUrl, { 'Content-Type': 'image/png' }, Buffer.from('private bytes'), 2),
+		(error) => {
+			assert.ok(error instanceof NodeOperationError);
+			assert.equal(error.message.includes(signedUrl), false);
+			assert.equal(error.stack.includes('private-signature'), false);
+			assert.equal(error.context.itemIndex, 2);
+			return true;
+		},
+	);
+	assert.equal(requestOptions.headers.Authorization, undefined);
+	assert.equal(requestOptions.method, 'PUT');
+	assert.equal(requestOptions.maxRedirects, 0);
+});
+
 test('request errors expose request id and Retry-After but redact secrets, payloads and signed query data', async () => {
 	const secret = 'm2u_live_never_leak_this';
 	const binary = Buffer.from('private binary bytes').toString('base64');

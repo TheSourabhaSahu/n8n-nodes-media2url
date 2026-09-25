@@ -1,6 +1,7 @@
 import type { IExecuteFunctions, INodeExecutionData, JsonObject } from 'n8n-workflow';
 import { NodeApiError, NodeOperationError } from 'n8n-workflow';
 import { requestMedia2Url } from './transport';
+import { executeUploadBinary } from './uploads';
 
 interface AssetListResponse {
 	data: JsonObject[];
@@ -19,6 +20,7 @@ export type Media2UrlOperation =
 	| 'asset.get'
 	| 'asset.getMany'
 	| 'asset.delete'
+	| 'asset.upload'
 	| 'version.getMany';
 
 const API_PAGE_SIZE = 100;
@@ -32,6 +34,7 @@ function getOperationKey(resource: string, operation: string): Media2UrlOperatio
 		key === 'asset.get' ||
 		key === 'asset.getMany' ||
 		key === 'asset.delete' ||
+		key === 'asset.upload' ||
 		key === 'version.getMany'
 	) {
 		return key;
@@ -128,6 +131,9 @@ export async function executeOperation(
 			itemIndex: itemIndexOffset,
 		});
 	}
+	if (operationKey === 'asset.upload') {
+		return executeUploadBinary(context, inputItems, itemIndexOffset);
+	}
 	const output: INodeExecutionData[] = [];
 	for (let inputIndex = 0; inputIndex < inputItems.length; inputIndex++) {
 		const itemIndex = itemIndexOffset + inputIndex;
@@ -189,6 +195,8 @@ export function addItemIndexToNodeError(
 	error: unknown,
 	itemIndex: number,
 ): NodeApiError | NodeOperationError {
+	const errorContext = error instanceof NodeApiError || error instanceof NodeOperationError ? error.context : undefined;
+	const actualItemIndex = typeof errorContext?.itemIndex === 'number' ? errorContext.itemIndex : itemIndex;
 	if (error instanceof NodeApiError) {
 		const safeResponse: JsonObject = {};
 		if (error.httpCode) safeResponse.statusCode = error.httpCode;
@@ -196,7 +204,7 @@ export function addItemIndexToNodeError(
 			message: error.message,
 			description: error.description ?? undefined,
 			httpCode: error.httpCode ?? undefined,
-			itemIndex,
+			itemIndex: actualItemIndex,
 		});
 		for (const key of ['requestId', 'retryAfter']) {
 			const value = error.context[key];
@@ -208,10 +216,10 @@ export function addItemIndexToNodeError(
 	if (error instanceof NodeOperationError) {
 		return new NodeOperationError(context.getNode(), error.message, {
 			description: error.description ?? undefined,
-			itemIndex,
+			itemIndex: actualItemIndex,
 		});
 	}
 	return new NodeOperationError(context.getNode(), 'Media2URL operation failed. Check the input and try again.', {
-		itemIndex,
+		itemIndex: actualItemIndex,
 	});
 }
