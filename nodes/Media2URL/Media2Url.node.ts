@@ -56,9 +56,10 @@ export class Media2URL implements INodeType {
 				noDataExpression: true,
 				displayOptions: { show: { resource: ['asset'] } },
 				options: [
+					{ name: 'Delete', value: 'delete', action: 'Delete an asset' },
 					{ name: 'Get', value: 'get', action: 'Get an asset' },
 					{ name: 'Get Many', value: 'getMany', action: 'Get many assets' },
-					{ name: 'Delete', value: 'delete', action: 'Delete an asset' },
+					{ name: 'Import From URL', value: 'importFromUrl', action: 'Import a file from a URL' },
 					{ name: 'Upload Binary File', value: 'upload', action: 'Upload a binary file' },
 				],
 				default: 'getMany',
@@ -82,20 +83,30 @@ export class Media2URL implements INodeType {
 				description: 'Name of the incoming binary property to upload',
 			},
 			{
+				displayName: 'Source URL',
+				name: 'url',
+				type: 'string',
+				required: true,
+				displayOptions: { show: { resource: ['asset'], operation: ['importFromUrl'] } },
+				default: '',
+				placeholder: 'https://example.com/image.png',
+				description: 'Public HTTP or HTTPS URL for Media2URL to fetch securely',
+			},
+			{
 				displayName: 'File Name',
 				name: 'filename',
 				type: 'string',
-				displayOptions: { show: { resource: ['asset'], operation: ['upload'] } },
+				displayOptions: { show: { resource: ['asset'], operation: ['upload', 'importFromUrl'] } },
 				default: '',
 				placeholder: 'Leave empty to use the incoming filename',
-				description: 'Optional destination filename to use instead of the incoming binary filename',
+				description: 'Optional destination filename to use instead of the incoming filename',
 			},
 			{
 				displayName: 'Privacy',
 				name: 'privacy',
 				type: 'options',
 				noDataExpression: true,
-				displayOptions: { show: { resource: ['asset'], operation: ['upload'] } },
+				displayOptions: { show: { resource: ['asset'], operation: ['upload', 'importFromUrl'] } },
 				options: [
 					{ name: 'Public', value: 'public' },
 					{ name: 'Unlisted', value: 'unlisted' },
@@ -166,10 +177,11 @@ export class Media2URL implements INodeType {
 		if (
 			inputItems.length &&
 			this.getNodeParameter('resource', 0) === 'asset' &&
-			this.getNodeParameter('operation', 0) === 'upload'
+			['upload', 'importFromUrl'].includes(this.getNodeParameter('operation', 0) as string)
 		) {
 			try {
-				return [await executeOperation(this, 'asset', 'upload', inputItems)];
+				const operation = this.getNodeParameter('operation', 0) as string;
+				return [await executeOperation(this, 'asset', operation, inputItems)];
 			} catch (error) {
 				const errorIndex =
 					error instanceof NodeApiError || error instanceof NodeOperationError
