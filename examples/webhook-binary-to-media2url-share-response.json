@@ -1,0 +1,66 @@
+{
+  "name": "Webhook binary upload to Media2URL share response",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "media2url-binary-upload",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7c21",
+      "name": "Receive uploaded file",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 240]
+    },
+    {
+      "parameters": {
+        "resource": "asset",
+        "operation": "upload",
+        "binaryPropertyName": "data",
+        "filename": "",
+        "privacy": "public"
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7c22",
+      "name": "Publish with Media2URL",
+      "type": "n8n-nodes-media2url.media2Url",
+      "typeVersion": 1,
+      "position": [280, 240]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ directUrl: $json.directUrl, shareUrl: $json.shareUrl, temporary: $json.temporary, expires_at: $json.expires_at }) }}",
+        "options": {}
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7c23",
+      "name": "Return file links",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [560, 240]
+    },
+    {
+      "parameters": {
+        "content": "## Before running\nConnect the Media2URL credential and configure a caller or service to send a multipart binary field named `data` to the webhook. The Media2URL Binary Property is `data`. Free trial uploads are temporary and expire after 48 hours; return and check `expires_at` before using the link later. Persistent hosting and replacement require a paid plan.",
+        "height": 220,
+        "width": 350
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7c24",
+      "name": "Setup and expiry notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [250, -80]
+    }
+  ],
+  "connections": {
+    "Receive uploaded file": {
+      "main": [[{ "node": "Publish with Media2URL", "type": "main", "index": 0 }]]
+    },
+    "Publish with Media2URL": {
+      "main": [[{ "node": "Return file links", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

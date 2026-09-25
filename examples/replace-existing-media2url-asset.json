@@ -1,0 +1,66 @@
+{
+  "name": "Replace an existing Media2URL asset version",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "media2url-replace-asset",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7e41",
+      "name": "Receive asset ID and replacement file",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 240]
+    },
+    {
+      "parameters": {
+        "resource": "asset",
+        "operation": "replace",
+        "assetId": "={{ $json.assetId }}",
+        "binaryPropertyName": "data",
+        "filename": ""
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7e42",
+      "name": "Replace asset version with Media2URL",
+      "type": "n8n-nodes-media2url.media2Url",
+      "typeVersion": 1,
+      "position": [300, 240]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ id: $json.id, directUrl: $json.directUrl, shareUrl: $json.shareUrl, current_version: $json.current_version }) }}",
+        "options": {}
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7e43",
+      "name": "Return updated asset links",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [600, 240]
+    },
+    {
+      "parameters": {
+        "content": "## Before running\nConnect a Media2URL credential with permission to replace this asset. Send the existing `assetId` and a replacement binary field named `data`; the node's Binary Property is `data`. Replacement requires an active paid plan, creates a new version, and keeps the same managed URL. There is no rollback operation. New Free trial uploads or imports expire after 48 hours; replacing a persistent asset is a paid operation and does not turn it into a temporary upload.",
+        "height": 250,
+        "width": 380
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7e44",
+      "name": "Paid replacement and expiry notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [300, -90]
+    }
+  ],
+  "connections": {
+    "Receive asset ID and replacement file": {
+      "main": [[{ "node": "Replace asset version with Media2URL", "type": "main", "index": 0 }]]
+    },
+    "Replace asset version with Media2URL": {
+      "main": [[{ "node": "Return updated asset links", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}

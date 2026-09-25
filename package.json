@@ -1,7 +1,7 @@
 {
     "name": "n8n-nodes-media2url",
     "version": "0.1.0",
-    "description": "Community node scaffold for connecting n8n workflows to Media2URL.",
+    "description": "Upload and manage hosted files in Media2URL from n8n workflows.",
     "license": "MIT",
     "homepage": "https://media2url.com/integrations/n8n",
     "keywords": [
@@ -22,6 +22,7 @@
     "files": [
         "dist",
         "README.md",
+        "SECURITY.md",
         "LICENSE",
         "CHANGELOG.md"
     ],

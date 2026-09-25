@@ -1,0 +1,79 @@
+{
+  "name": "Generated image to Media2URL to WordPress",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7d31",
+      "name": "Run workflow manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [0, 240]
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "generate",
+        "prompt": "Create a clean editorial cover image for a technology article"
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7d32",
+      "name": "Generate image with OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2,
+      "position": [240, 240]
+    },
+    {
+      "parameters": {
+        "resource": "asset",
+        "operation": "upload",
+        "binaryPropertyName": "data",
+        "filename": "",
+        "privacy": "public"
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7d33",
+      "name": "Publish image with Media2URL",
+      "type": "n8n-nodes-media2url.media2Url",
+      "typeVersion": 1,
+      "position": [520, 240]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://wordpress.example/wp-json/wp/v2/media",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "data",
+        "options": {}
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7d34",
+      "name": "Send image to WordPress media",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [800, 240]
+    },
+    {
+      "parameters": {
+        "content": "## Before running\nAdd OpenAI, Media2URL, and WordPress REST API credentials, replace the example WordPress host with your own site, and confirm the HTTP Request node sends binary property `data` with the headers your site requires. Free trial publishing is temporary and expires after 48 hours; a WordPress media record does not extend Media2URL hosting. Persistent Media2URL hosting and replacement require a paid plan.",
+        "height": 235,
+        "width": 370
+      },
+      "id": "b639c862-a6ec-4f3d-9841-e773b84a7d35",
+      "name": "Setup and expiry notes",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [300, -80]
+    }
+  ],
+  "connections": {
+    "Run workflow manually": {
+      "main": [[{ "node": "Generate image with OpenAI", "type": "main", "index": 0 }]]
+    },
+    "Generate image with OpenAI": {
+      "main": [[{ "node": "Publish image with Media2URL", "type": "main", "index": 0 }]]
+    },
+    "Publish image with Media2URL": {
+      "main": [[{ "node": "Send image to WordPress media", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" }
+}
