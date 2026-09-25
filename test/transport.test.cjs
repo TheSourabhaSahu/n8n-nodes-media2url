@@ -27,6 +27,15 @@ test('requestMedia2Url uses n8n credential substitution and parses JSON', async 
 	assert.equal(called.options.timeout, 30_000);
 });
 
+test('204 responses are valid for DELETE requests with no response body', async () => {
+	const context = makeContext(async () => ({ body: undefined, statusCode: 204 }));
+	const result = await transport.requestMedia2Url(context, '/v1/assets/asset_1', {
+		method: 'DELETE',
+		itemIndex: 0,
+	});
+	assert.deepEqual(result, {});
+});
+
 test('request errors expose request id and Retry-After but redact secrets, payloads and signed query data', async () => {
 	const secret = 'm2u_live_never_leak_this';
 	const binary = Buffer.from('private binary bytes').toString('base64');

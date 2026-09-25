@@ -157,5 +157,6 @@ export async function requestMedia2Url<T>(
 		);
 	}
 	const responseRecord = asRecord(response);
+	if (requestOptions.method === 'DELETE' && responseRecord?.statusCode === 204) return {} as T;
 	return parseResponseBody<T>(responseRecord && 'body' in responseRecord ? responseRecord.body : response, context, itemIndex);
 }

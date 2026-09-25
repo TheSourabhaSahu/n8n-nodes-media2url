@@ -4,75 +4,150 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 } from 'n8n-workflow';
-import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
+import { addItemIndexToNodeError, executeOperation } from './operations';
 
 export class Media2URL implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Media2URL',
 		name: 'media2Url',
 		icon: { light: 'file:example.svg', dark: 'file:example.dark.svg' },
-		group: ['input'],
+		group: ['transform'],
 		version: [1],
-		description: 'Media2URL node scaffold; operations are implemented in the next development phase.',
-		subtitle: 'Upload and manage Media2URL assets',
+		description: 'Upload and manage Media2URL assets and account usage.',
+		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		defaults: {
 			name: 'Media2URL',
 		},
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
-		properties: [
-			// Node properties which the user gets displayed and
-			// can change on the node.
+		credentials: [
 			{
-				displayName: 'My String',
-				name: 'myString',
+				name: 'media2URLApi',
+				required: true,
+			},
+		],
+		properties: [
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{ name: 'Account', value: 'account' },
+					{ name: 'Asset', value: 'asset' },
+					{ name: 'Version', value: 'version' },
+				],
+				default: 'asset',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['account'] } },
+				options: [{ name: 'Get Usage', value: 'getUsage', action: 'Get account usage' }],
+				default: 'getUsage',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['asset'] } },
+				options: [
+					{ name: 'Get', value: 'get', action: 'Get an asset' },
+					{ name: 'Get Many', value: 'getMany', action: 'Get many assets' },
+					{ name: 'Delete', value: 'delete', action: 'Delete an asset' },
+				],
+				default: 'getMany',
+			},
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: { show: { resource: ['version'] } },
+				options: [{ name: 'Get Many', value: 'getMany', action: 'Get many asset versions' }],
+				default: 'getMany',
+			},
+			{
+				displayName: 'Asset ID',
+				name: 'assetId',
 				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['asset'],
+						operation: ['get', 'delete'],
+					},
+				},
 				default: '',
-				placeholder: 'Placeholder value',
-				description: 'The description text',
+				placeholder: 'asset_123',
+				description: 'The asset ID returned by Media2URL. Deletion removes the asset from your account.',
+			},
+			{
+				displayName: 'Asset ID',
+				name: 'assetId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['version'],
+						operation: ['getMany'],
+					},
+				},
+				default: '',
+				placeholder: 'asset_123',
+				description: 'The asset whose read-only version history you want to retrieve',
+			},
+			{
+				displayName: 'Return All',
+				name: 'returnAll',
+				type: 'boolean',
+				displayOptions: { show: { resource: ['asset'], operation: ['getMany'] } },
+				default: false,
+				description: 'Whether to return all results or only up to a given limit',
+			},
+			{
+				displayName: 'Limit',
+				name: 'limit',
+				type: 'number',
+				displayOptions: {
+					show: {
+						resource: ['asset'],
+						operation: ['getMany'],
+						returnAll: [false],
+					},
+				},
+				typeOptions: { minValue: 1, maxValue: 10000 },
+				default: 50,
+				description: 'Max number of results to return',
 			},
 		],
 	};
 
-	// The function below is responsible for actually doing whatever this node
-	// is supposed to do. In this case, we're just appending the `myString` property
-	// with whatever the user has entered.
-	// You can make async calls and use `await`.
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
-		const items = this.getInputData();
-
-		let item: INodeExecutionData;
-		let myString: string;
-
-		// Iterates over all input items and add the key "myString" with the
-		// value the parameter "myString" resolves to.
-		// (This could be a different value for each item in case it contains an expression)
-		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+		const inputItems = this.getInputData();
+		const output: INodeExecutionData[] = [];
+		for (let itemIndex = 0; itemIndex < inputItems.length; itemIndex++) {
 			try {
-				myString = this.getNodeParameter('myString', itemIndex, '') as string;
-				item = items[itemIndex];
-
-				item.json.myString = myString;
+				const resource = this.getNodeParameter('resource', itemIndex) as string;
+				const operation = this.getNodeParameter('operation', itemIndex) as string;
+				const itemOutput = await executeOperation(this, resource, operation, [inputItems[itemIndex]], itemIndex);
+				output.push(...itemOutput);
 			} catch (error) {
-				// This node should never fail but we want to showcase how
-				// to handle errors.
 				if (this.continueOnFail()) {
-					items.push({ json: this.getInputData(itemIndex)[0].json, error, pairedItem: itemIndex });
-				} else {
-					// Adding `itemIndex` allows other workflows to handle this error
-					if (error.context) {
-						// If the error thrown already contains the context property,
-						// only append the itemIndex
-						error.context.itemIndex = itemIndex;
-						throw error;
-					}
-					throw new NodeOperationError(this.getNode(), error, {
-						itemIndex,
-					});
+					const safeMessage =
+						error instanceof NodeOperationError || error instanceof NodeApiError
+							? error.message
+							: 'Media2URL operation failed.';
+					output.push({ json: { error: safeMessage }, pairedItem: { item: itemIndex } });
+					continue;
 				}
+				throw addItemIndexToNodeError(this, error, itemIndex);
 			}
 		}
-
-		return [items];
+		return [output];
 	}
 }
