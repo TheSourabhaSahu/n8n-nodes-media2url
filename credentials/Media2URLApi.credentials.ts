@@ -5,5 +5,30 @@ export class Media2URLApi implements ICredentialType {
 	displayName = 'Media2URL API';
 	icon = 'fa:cloud' as const;
 	documentationUrl = 'https://media2url.com/docs/api/v1';
-	properties: INodeProperties[] = [];
+	authenticate = {
+		type: 'generic' as const,
+		properties: {
+			headers: {
+				Authorization: '=Bearer {{$credentials.apiKey}}',
+			},
+		},
+	};
+	test = {
+		request: {
+			baseURL: 'https://api.media2url.com',
+			url: '/v1/usage',
+			method: 'GET' as const,
+		},
+	};
+	properties: INodeProperties[] = [
+		{
+			displayName: 'API Key',
+			name: 'apiKey',
+			type: 'string',
+			typeOptions: { password: true },
+			default: '',
+			required: true,
+			description: 'A Media2URL API key. It is sent as a bearer token and stored by n8n credentials.',
+		},
+	];
 }

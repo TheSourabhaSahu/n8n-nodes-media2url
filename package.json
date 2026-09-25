@@ -11,12 +11,13 @@
         "name": "Sagar Kumar Sahu, sole proprietor trading as Sagarvo Labs",
         "email": "support@media2url.com"
     },
-   "scripts": {
+	"scripts": {
 		"build": "n8n-node build",
 		"build:watch": "tsc --watch",
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
-		"lint:fix": "n8n-node lint --fix"
+		"lint:fix": "n8n-node lint --fix",
+		"test": "npm run build && node --test test/*.test.cjs"
 	},
     "files": [
         "dist",
