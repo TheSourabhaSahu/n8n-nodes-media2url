@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-media2url",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Development", "Developer Tools"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://media2url.com/docs/api/v1"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://media2url.com/integrations/n8n"
+			}
+		]
+	}
+}

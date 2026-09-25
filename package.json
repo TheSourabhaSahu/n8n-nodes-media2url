@@ -1,0 +1,46 @@
+{
+    "name": "n8n-nodes-media2url",
+    "version": "0.1.0",
+    "description": "Community node scaffold for connecting n8n workflows to Media2URL.",
+    "license": "MIT",
+    "homepage": "https://media2url.com/integrations/n8n",
+    "keywords": [
+        "n8n-community-node-package"
+    ],
+    "author": {
+        "name": "Sagar Kumar Sahu, sole proprietor trading as Sagarvo Labs",
+        "email": "support@media2url.com"
+    },
+   "scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix"
+	},
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE",
+        "CHANGELOG.md"
+    ],
+    "n8n": {
+        "n8nNodesApiVersion": 1,
+        "strict": true,
+        "credentials": [
+            "dist/credentials/Media2URLApi.credentials.js"
+        ],
+        "nodes": [
+            "dist/nodes/Media2URL/Media2URL.node.js"
+        ]
+    },
+    "devDependencies": {
+        "@n8n/node-cli": "0.49.1",
+        "eslint": "9.32.0",
+        "prettier": "3.6.2",
+        "typescript": "5.9.2"
+    },
+    "peerDependencies": {
+        "n8n-workflow": "*"
+    }
+}
