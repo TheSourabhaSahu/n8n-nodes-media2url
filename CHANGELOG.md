@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.5
+
+- Align credential property order, explicit icon typing, and generic bearer authorization expression syntax (`{{$credentials?.apiKey}}`) exactly with official n8n community node starter template.
+
 ## 0.2.4
 
 - Disable TypeScript `.d.ts` declaration file emission so n8n automated vetting scanner does not treat declaration stubs as missing credential tests.

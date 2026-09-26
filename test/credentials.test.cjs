@@ -14,7 +14,7 @@ test('Media2URL credential uses password-only bearer auth and a read-only usage 
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=Bearer {{$credentials.apiKey}}',
+				Authorization: '=Bearer {{$credentials?.apiKey}}',
 			},
 		},
 	});
