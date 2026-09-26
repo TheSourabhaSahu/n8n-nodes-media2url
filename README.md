@@ -2,6 +2,8 @@
 
 Media2URL lets an n8n workflow publish a file and pass a direct file URL or a share page to the next step. This is a pre-release community-node project: it is not yet published to npm or submitted to n8n, so there is no installation command to run yet.
 
+The [public source repository](https://github.com/TheSourabhaSahu/n8n-nodes-media2url) contains the node implementation and release checks. Use its [issue tracker](https://github.com/TheSourabhaSahu/n8n-nodes-media2url/issues) to report a problem or request a change.
+
 Use the [Media2URL homepage](https://media2url.com/) to learn what the service hosts, browse the [Media tools](https://media2url.com/tools) for supported file workflows, or read the [API v1 documentation](https://media2url.com/docs/api/v1) when you need the exact request and response fields.
 
 ## What the node does
@@ -36,7 +38,7 @@ For **Replace**, provide the existing asset ID and incoming binary property. Rep
 
 ## Examples
 
-The `examples/` folder contains four credential-free workflow templates. They use blank service settings and have not been run against connected user accounts. Add your own credentials after importing, then inspect the selected binary property and any service-specific IDs before enabling a workflow.
+The GitHub repository's [workflow examples](https://github.com/TheSourabhaSahu/n8n-nodes-media2url/tree/main/examples) include four credential-free templates. They use blank service settings and have not been run against connected user accounts. Add your own credentials after importing, then inspect the selected binary property and any service-specific IDs before enabling a workflow.
 
 - `drive-to-media2url-to-sheets.json` downloads a Drive file, publishes it, then appends its result to a Sheet.
 - `webhook-binary-to-media2url-share-response.json` receives a binary upload and returns the resulting links in a webhook response.
