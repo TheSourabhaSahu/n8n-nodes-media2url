@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- Disable TypeScript `.d.ts` declaration file emission so n8n automated vetting scanner does not treat declaration stubs as missing credential tests.
+
 ## 0.2.3
 
 - Add explicit `headers` with `Authorization` Bearer token into `test.request` in `Media2URLApi.credentials.ts` for automated vetting environments that do not inherit from generic auth.
