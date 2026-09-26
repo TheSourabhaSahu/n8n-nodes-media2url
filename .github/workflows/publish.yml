@@ -94,5 +94,5 @@ jobs:
       - name: Verify the npm CLI bundled with the locked Node.js release
         run: test "$(npm --version)" = '11.19.0'
 
-      - name: Stage with the lockfile-pinned npm CLI and provenance
-        run: npm stage publish --provenance --access public
+      - name: Publish with the lockfile-pinned npm CLI and provenance
+        run: npm publish --provenance --access public
