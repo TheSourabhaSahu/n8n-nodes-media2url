@@ -1,6 +1,8 @@
 # Changelog
 
-## 0.2.0
+## 0.2.1
+
+- Remove redundant `testedBy` string from node `credentials` array so n8n runtime directly evaluates the credential's `test: ICredentialTestRequest`.
 
 - Set `usableAsTool: true` on node description as required by the n8n community node specification.
 - Clean up credential test specification and remove non-standard class properties for strict scanner compatibility.
