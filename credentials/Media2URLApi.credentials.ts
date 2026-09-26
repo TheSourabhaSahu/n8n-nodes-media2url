@@ -1,23 +1,31 @@
-import type { ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
+import type {
+	IAuthenticateGeneric,
+	ICredentialTestRequest,
+	ICredentialType,
+	INodeProperties,
+} from 'n8n-workflow';
 
 export class Media2URLApi implements ICredentialType {
 	name = 'media2URLApi';
 	displayName = 'Media2URL API';
-	icon = 'fa:cloud' as const;
+	icon = { light: 'file:example.svg', dark: 'file:example.dark.svg' } as const;
 	documentationUrl = 'https://media2url.com/docs/api/v1';
-	authenticate = {
-		type: 'generic' as const,
+	testedBy = 'media2Url';
+
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
 		properties: {
 			headers: {
 				Authorization: '=Bearer {{$credentials.apiKey}}',
 			},
 		},
 	};
+
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://api.media2url.com',
 			url: '/v1/usage',
-			method: 'GET' as const,
+			method: 'GET',
 		},
 	};
 	properties: INodeProperties[] = [
