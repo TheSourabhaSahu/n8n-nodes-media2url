@@ -3,7 +3,7 @@
     "version": "0.1.0",
     "description": "Upload and manage hosted files in Media2URL from n8n workflows.",
     "license": "MIT",
-    "homepage": "https://media2url.com/",
+    "homepage": "https://media2url.com/integrations/n8n",
     "repository": "git+https://github.com/TheSourabhaSahu/n8n-nodes-media2url.git",
     "keywords": [
         "n8n-community-node-package"

@@ -18,9 +18,13 @@ const requiredLinks = new Map([
 	['https://media2url.com/dmca', /DMCA requests/i],
 	['https://media2url.com/subprocessors', /Service providers and subprocessors/i],
 ]);
+const requiredRepositoryLinks = new Map([
+	['https://github.com/TheSourabhaSahu/n8n-nodes-media2url', /source repository/i],
+	['https://github.com/TheSourabhaSahu/n8n-nodes-media2url/issues', /issue tracker/i],
+]);
 
 function documentationFiles() {
-	const files = ['README.md', 'CHANGELOG.md', 'SECURITY.md'];
+	const files = ['README.md', 'CHANGELOG.md', 'SECURITY.md', 'RELEASE.md'];
 	for (const name of fs.readdirSync(path.join(root, 'examples')).filter((file) => file.endsWith('.json'))) {
 		files.push(path.join('examples', name));
 	}
@@ -35,9 +39,15 @@ test('public README has contextual Media2URL backlinks and stays truthful before
 		assert.equal(matches.length, 1, `README should link to ${url} exactly once`);
 		assert.match(matches[0][1], anchorPattern, `link to ${url} should have a descriptive anchor`);
 	}
+	for (const [url, anchorPattern] of requiredRepositoryLinks) {
+		const matches = links.filter(([, , target]) => target === url);
+		assert.equal(matches.length, 1, `README should link to ${url} exactly once`);
+		assert.match(matches[0][1], anchorPattern, `link to ${url} should have a descriptive anchor`);
+	}
 	for (const [anchor] of links) assert.doesNotMatch(anchor, /^(here|click here|learn more|this page)$/i);
 	assert.match(readme, /not yet published/i);
 	assert.doesNotMatch(readme, /npm\s+install\s+n8n-nodes-media2url/i);
+	assert.match(readme, /\[workflow examples\]\(https:\/\/github\.com\/TheSourabhaSahu\/n8n-nodes-media2url\/tree\/main\/examples\)/i);
 });
 
 test('public documentation contains no private paths, secret-shaped values, or private-host URLs', () => {
@@ -89,11 +99,18 @@ test('MIT terms, security contact route, and Media2URL-owned node icons are pres
 	assert.equal(packageJson.license, 'MIT');
 	assert.ok(packageJson.files.includes('SECURITY.md'));
 	assert.ok(packageJson.files.includes('README.md'));
-	assert.equal(packageJson.homepage, 'https://media2url.com/');
+	assert.equal(packageJson.homepage, 'https://media2url.com/integrations/n8n');
 	for (const filename of ['example.svg', 'example.dark.svg']) {
 		const icon = fs.readFileSync(path.join(root, 'nodes/Media2URL', filename), 'utf8');
 		assert.match(icon, /<svg[\s\S]*viewBox="0 0 24 24"/);
 		assert.doesNotMatch(icon, /n8n/i);
 		assert.doesNotMatch(icon, /feather|lucide/i);
 	}
+});
+
+test('release notes distinguish the public repository from unverified release settings', () => {
+	const release = fs.readFileSync(path.join(root, 'RELEASE.md'), 'utf8');
+	assert.match(release, /public source repository is already created/i);
+	assert.match(release, /branch\/tag protections.*trusted publisher/i);
+	assert.doesNotMatch(release, /current repository checkout is local-only/i);
 });
