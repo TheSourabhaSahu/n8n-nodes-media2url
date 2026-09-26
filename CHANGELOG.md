@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- Add explicit `headers` with `Authorization` Bearer token into `test.request` in `Media2URLApi.credentials.ts` for automated vetting environments that do not inherit from generic auth.
+
 ## 0.2.2
 
 - Match `Media2Url.node.json` codex file casing precisely to `Media2Url.node.ts` for Linux case-sensitive filesystems and n8n vetting registry.

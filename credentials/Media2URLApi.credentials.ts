@@ -25,6 +25,9 @@ export class Media2URLApi implements ICredentialType {
 			baseURL: 'https://api.media2url.com',
 			url: '/v1/usage',
 			method: 'GET',
+			headers: {
+				Authorization: '=Bearer {{$credentials.apiKey}}',
+			},
 		},
 	};
 	properties: INodeProperties[] = [
