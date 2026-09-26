@@ -31,6 +31,7 @@ jobs:
         with:
           node-version: '24.21.0'
           package-manager-cache: false
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Verify package identity and tag
         env:
@@ -90,6 +91,7 @@ jobs:
         with:
           node-version: '24.21.0'
           package-manager-cache: false
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Verify the npm CLI bundled with the locked Node.js release
         run: test "$(npm --version)" = '11.19.0'
