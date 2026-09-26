@@ -1,4 +1,4 @@
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class Media2URLApi implements ICredentialType {
 	name = 'media2URLApi';
@@ -13,7 +13,7 @@ export class Media2URLApi implements ICredentialType {
 			},
 		},
 	};
-	test = {
+	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://api.media2url.com',
 			url: '/v1/usage',

@@ -1,10 +1,8 @@
 # Changelog
 
-Changes to the local pre-release package are recorded here. Public availability and version history will be updated only after an actual release.
+## 0.1.7
 
-## 0.1.0 — not yet published
-
-- Add the Media2URL API credential and account usage operation.
-- Upload binary files and import supported public URLs through Media2URL.
-- Read, list, delete, replace, and inspect versions of owned assets.
-- Add credential-free n8n workflow examples and package security guidance.
+- Add `testedBy: 'media2URLApi'` to node credentials declaration for n8n verification compliance.
+- Explicit credential test against the Media2URL `/v1/usage` endpoint.
+- Link Media2URL documentation, privacy policy, terms, acceptable use, contact support, tools, and pricing.
+- Automated GitHub Actions release with npm SLSA provenance.
