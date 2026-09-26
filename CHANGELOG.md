@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2
+
+- Match `Media2Url.node.json` codex file casing precisely to `Media2Url.node.ts` for Linux case-sensitive filesystems and n8n vetting registry.
+
 ## 0.2.1
 
 - Remove redundant `testedBy` string from node `credentials` array so n8n runtime directly evaluates the credential's `test: ICredentialTestRequest`.

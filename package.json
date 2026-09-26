@@ -1,6 +1,6 @@
 {
     "name": "n8n-nodes-media2url",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Upload and manage hosted files in Media2URL from n8n workflows.",
     "license": "MIT",
     "homepage": "https://media2url.com/integrations/n8n",
