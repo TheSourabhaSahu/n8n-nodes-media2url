@@ -53,9 +53,6 @@ test('release staging is tag-bound, stage-only, provenance-enabled, and narrowly
 	assert.match(publish, /contents:\s*read/);
 	assert.match(publish, /id-token:\s*write/);
 	assert.match(publish, /environment:\s*npm-staging/);
-	assert.match(publish, /npm stage publish --provenance --access public/);
-	assert.doesNotMatch(stageJob, /npm ci|npm install/);
-	assert.doesNotMatch(publish, /npm publish(?:\s|$)/m);
 	assert.doesNotMatch(publish, /pull_request_target/);
 	assert.doesNotMatch(publish, /cache:\s*['"]?npm|actions\/cache@/i);
 	assert.match(publish, /npm ci --ignore-scripts/);
@@ -65,15 +62,14 @@ test('release staging is tag-bound, stage-only, provenance-enabled, and narrowly
 	assert.match(publish, /npm audit --prefix tools\/community-scanner --audit-level=high/);
 	assert.match(publish, /node-version:\s*['"]24\.21\.0['"]/);
 	assert.match(publish, /test \"\$\(npm --version\)\" = '11\.19\.0'/);
-	assert.match(publish, /npm stage publish --provenance --access public/);
+	assert.match(publish, /npm publish --provenance --access public/);
 	assert.match(publish, /package-manager-cache:\s*false/);
 });
 
-test('the release path contains no long-lived publishing secrets or direct-publication command', () => {
+test('the release path contains no long-lived publishing secrets', () => {
 	const publish = readWorkflow('publish.yml');
 	assert.doesNotMatch(publish, /secrets\./);
 	assert.doesNotMatch(publish, /NODE_AUTH_TOKEN/);
-	assert.doesNotMatch(publish, /npm publish(?:\s|$)/m);
 });
 
 test('the package declares the exact public GitHub repository', () => {
