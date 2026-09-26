@@ -237,3 +237,6 @@ export class Media2URL implements INodeType {
 		return [output];
 	}
 }
+
+// n8n resolves the constructor export from the `Media2Url.node.js` entry name.
+export { Media2URL as Media2Url };

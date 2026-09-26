@@ -2,7 +2,7 @@
 
 Media2URL lets an n8n workflow publish a file and pass a direct file URL or a share page to the next step. This is a pre-release community-node project: it is not yet published to npm or submitted to n8n, so there is no installation command to run yet.
 
-Use the [Media2URL homepage](https://media2url.com/) to learn what the service hosts, browse the [Media tools](https://media2url.com/tools) for supported file workflows, or read the [API v1 documentation](https://media2url.com/docs/api/v1) when you need the exact request and response fields. The [Media2URL n8n integration page](https://media2url.com/integrations/n8n) has product-specific setup information.
+Use the [Media2URL homepage](https://media2url.com/) to learn what the service hosts, browse the [Media tools](https://media2url.com/tools) for supported file workflows, or read the [API v1 documentation](https://media2url.com/docs/api/v1) when you need the exact request and response fields.
 
 ## What the node does
 

@@ -1,0 +1,98 @@
+name: Stage npm release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions: {}
+
+concurrency:
+  group: npm-staging-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate tagged release
+    if: github.repository == 'TheSourabhaSahu/n8n-nodes-media2url' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+    steps:
+      - name: Check out the event commit without persisting credentials
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up locked Node.js version
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - name: Verify package identity and tag
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          node -e 'const p = require("./package.json"); const expected = `v${p.version}`; const repo = typeof p.repository === "string" ? p.repository : p.repository?.url; if (process.env.RELEASE_TAG !== expected) throw new Error(`Tag ${process.env.RELEASE_TAG} does not match ${expected}`); if (!/^git\+https:\/\/github\.com\/TheSourabhaSahu\/n8n-nodes-media2url\.git$/.test(repo || "")) throw new Error("package.json repository must match the approved public repository");'
+
+      - name: Install from the lockfile
+        run: npm ci --ignore-scripts
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npm test
+
+      - name: Lint node code
+        run: npm run lint
+
+      - name: Build package
+        run: npm run build
+
+      - name: Install isolated scanner tooling without lifecycle scripts
+        run: npm ci --prefix tools/community-scanner --ignore-scripts
+
+      - name: Audit isolated scanner tooling
+        run: npm audit --prefix tools/community-scanner --audit-level=high
+
+      - name: Scan the built package with n8n's pinned scanner
+        run: npm run scan:community
+
+      - name: Review npm package inventory
+        run: npm pack --dry-run --json
+
+  stage:
+    name: Stage package for human review
+    needs: validate
+    if: github.repository == 'TheSourabhaSahu/n8n-nodes-media2url' && github.ref_type == 'tag' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment: npm-staging
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Check out the event commit without persisting credentials
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up locked Node.js version
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24.21.0'
+          package-manager-cache: false
+
+      - name: Verify the npm CLI bundled with the locked Node.js release
+        run: test "$(npm --version)" = '11.19.0'
+
+      - name: Stage with the lockfile-pinned npm CLI and provenance
+        run: npm stage publish --provenance --access public

@@ -89,7 +89,7 @@ test('MIT terms, security contact route, and Media2URL-owned node icons are pres
 	assert.equal(packageJson.license, 'MIT');
 	assert.ok(packageJson.files.includes('SECURITY.md'));
 	assert.ok(packageJson.files.includes('README.md'));
-	assert.equal(packageJson.homepage, 'https://media2url.com/integrations/n8n');
+	assert.equal(packageJson.homepage, 'https://media2url.com/');
 	for (const filename of ['example.svg', 'example.dark.svg']) {
 		const icon = fs.readFileSync(path.join(root, 'nodes/Media2URL', filename), 'utf8');
 		assert.match(icon, /<svg[\s\S]*viewBox="0 0 24 24"/);

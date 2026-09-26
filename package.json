@@ -3,7 +3,8 @@
     "version": "0.1.0",
     "description": "Upload and manage hosted files in Media2URL from n8n workflows.",
     "license": "MIT",
-    "homepage": "https://media2url.com/integrations/n8n",
+    "homepage": "https://media2url.com/",
+    "repository": "git+https://github.com/TheSourabhaSahu/n8n-nodes-media2url.git",
     "keywords": [
         "n8n-community-node-package"
     ],
@@ -17,7 +18,9 @@
 		"dev": "n8n-node dev",
 		"lint": "n8n-node lint",
 		"lint:fix": "n8n-node lint --fix",
-		"test": "npm run build && node --test test/*.test.cjs"
+		"test": "npm run build && node --test test/*.test.cjs",
+		"typecheck": "tsc --noEmit",
+		"scan:community": "node scripts/scan-community.cjs"
 	},
     "files": [
         "dist",
@@ -36,12 +39,12 @@
             "dist/nodes/Media2URL/Media2Url.node.js"
         ]
     },
-    "devDependencies": {
-        "@n8n/node-cli": "0.49.1",
-        "eslint": "9.32.0",
-        "prettier": "3.6.2",
-        "typescript": "5.9.2"
-    },
+	"devDependencies": {
+		"@n8n/node-cli": "0.49.1",
+		"eslint": "9.32.0",
+		"prettier": "3.6.2",
+		"typescript": "5.9.2"
+	},
     "peerDependencies": {
         "n8n-workflow": "*"
     }
