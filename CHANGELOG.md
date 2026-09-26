@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+- Set `usableAsTool: true` on node description as required by the n8n community node specification.
+- Clean up credential test specification and remove non-standard class properties for strict scanner compatibility.
+- Ensure 100% compliance with `@n8n/scan-community-package` rules.
+
 ## 0.1.7
 
 - Add `testedBy: 'media2URLApi'` to node credentials declaration for n8n verification compliance.

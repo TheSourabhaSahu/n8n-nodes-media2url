@@ -10,7 +10,6 @@ export class Media2URLApi implements ICredentialType {
 	displayName = 'Media2URL API';
 	icon = { light: 'file:example.svg', dark: 'file:example.dark.svg' } as const;
 	documentationUrl = 'https://media2url.com/docs/api/v1';
-	testedBy = 'media2Url';
 
 	authenticate: IAuthenticateGeneric = {
 		type: 'generic',
