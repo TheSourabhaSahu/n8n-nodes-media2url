@@ -92,7 +92,7 @@ test('replacement preserves the existing managed URL and returns new version met
 
 test('Asset:Replace is selectable in the editor and explains its URL and binary behavior', () => {
 	const properties = new Media2URL().description.properties;
-	assert.equal(Object.hasOwn(new Media2URL().description, 'usableAsTool'), false);
+	assert.equal(new Media2URL().description.usableAsTool, true);
 	const assetOperations = properties.find(({ name, displayOptions }) => name === 'operation' && displayOptions?.show?.resource?.includes('asset'));
 	const replaceOption = assetOperations.options.find(({ value }) => value === 'replace');
 	assert.deepEqual(replaceOption, {

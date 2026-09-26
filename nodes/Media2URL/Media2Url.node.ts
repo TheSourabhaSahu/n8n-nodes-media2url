@@ -7,7 +7,6 @@ import type {
 import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { addItemIndexToNodeError, executeOperation } from './operations';
 
-// eslint-disable-next-line @n8n/community-nodes/node-usable-as-tool -- AI Agent tool use is intentionally outside this integration's scope.
 export class Media2URL implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Media2URL',
@@ -20,6 +19,7 @@ export class Media2URL implements INodeType {
 		defaults: {
 			name: 'Media2URL',
 		},
+		usableAsTool: true,
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [
