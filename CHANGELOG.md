@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.7
+
+- Match n8n's credential-test request shape with `baseURL` and a relative `/v1/usage` path, using the credential's shared bearer-authentication configuration.
+
 ## 0.2.6
 
 - Provide explicit full URL (`https://api.media2url.com/v1/usage`) and explicit `headers` with Bearer token authentication in credential `test.request` for direct runner evaluation.
