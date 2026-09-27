@@ -31,6 +31,7 @@ jobs:
         with:
           node-version: '24.21.0'
           package-manager-cache: false
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Verify package identity and tag
         env:
@@ -90,9 +91,16 @@ jobs:
         with:
           node-version: '24.21.0'
           package-manager-cache: false
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Verify the npm CLI bundled with the locked Node.js release
         run: test "$(npm --version)" = '11.19.0'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build package
+        run: npm run build
 
       - name: Stage with the lockfile-pinned npm CLI and provenance
         run: npm stage publish --provenance --access public
