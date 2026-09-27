@@ -62,8 +62,16 @@ test('release staging is tag-bound, stage-only, provenance-enabled, and narrowly
 	assert.match(publish, /npm audit --prefix tools\/community-scanner --audit-level=high/);
 	assert.match(publish, /node-version:\s*['"]24\.21\.0['"]/);
 	assert.match(publish, /test \"\$\(npm --version\)\" = '11\.19\.0'/);
-	assert.match(publish, /npm publish --provenance --access public/);
+	assert.match(stageJob, /npm stage publish --provenance --access public/);
+	assert.doesNotMatch(stageJob, /^\s*run:\s*npm publish\b/m);
 	assert.match(publish, /package-manager-cache:\s*false/);
+});
+
+test('package and lockfile versions match for clean CI installs', () => {
+	const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+	const packageLock = JSON.parse(fs.readFileSync(path.join(root, 'package-lock.json'), 'utf8'));
+	assert.equal(packageLock.version, packageJson.version);
+	assert.equal(packageLock.packages[''].version, packageJson.version);
 });
 
 test('the release path contains no long-lived publishing secrets', () => {
