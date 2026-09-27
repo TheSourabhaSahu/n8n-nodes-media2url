@@ -35,11 +35,9 @@ export class Media2URLApi implements ICredentialType {
 
 	test: ICredentialTestRequest = {
 		request: {
-			url: 'https://api.media2url.com/v1/usage',
+			baseURL: 'https://api.media2url.com',
+			url: '/v1/usage',
 			method: 'GET',
-			headers: {
-				Authorization: '=Bearer {{$credentials?.apiKey}}',
-			},
 		},
 	};
 }

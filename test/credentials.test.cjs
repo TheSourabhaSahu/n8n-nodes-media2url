@@ -19,8 +19,9 @@ test('Media2URL credential uses password-only bearer auth and a read-only usage 
 		},
 	});
 	assert.equal(credential.test.request.method, 'GET');
-	assert.equal(credential.test.request.url, 'https://api.media2url.com/v1/usage');
-	assert.deepEqual(credential.test.request.headers, {
-		Authorization: '=Bearer {{$credentials?.apiKey}}',
+	assert.deepEqual(credential.test.request, {
+		baseURL: 'https://api.media2url.com',
+		url: '/v1/usage',
+		method: 'GET',
 	});
 });
