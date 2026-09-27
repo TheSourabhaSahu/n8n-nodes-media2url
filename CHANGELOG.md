@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.6
+
+- Provide explicit full URL (`https://api.media2url.com/v1/usage`) and explicit `headers` with Bearer token authentication in credential `test.request` for direct runner evaluation.
+
 ## 0.2.5
 
 - Align credential property order, explicit icon typing, and generic bearer authorization expression syntax (`{{$credentials?.apiKey}}`) exactly with official n8n community node starter template.
