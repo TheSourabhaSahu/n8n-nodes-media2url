@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.8
+
+- Update Codex categories in `Media2Url.node.json` to supported n8n categories (`Development`, `Data & Storage`) per community vetting feedback.
+
+## 0.2.7
+
+- Package configuration and community vetting adjustments.
+
 ## 0.2.6
 
 - Provide explicit full URL (`https://api.media2url.com/v1/usage`) and explicit `headers` with Bearer token authentication in credential `test.request` for direct runner evaluation.
