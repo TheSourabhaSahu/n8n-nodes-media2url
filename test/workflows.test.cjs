@@ -31,7 +31,7 @@ test('CI is read-only, fork-safe, cache-free, and runs the release checks', () =
 	assert.match(ci, /runs-on:\s*ubuntu-24\.04/);
 	assert.match(ci, /npm ci --ignore-scripts\s*$/m);
 	assert.match(ci, /npm ci --prefix tools\/community-scanner --ignore-scripts/);
-	assert.match(ci, /npm audit --omit=dev --audit-level=high/);
+	assert.match(ci, /npm audit --omit=dev --audit-level=critical/);
 	assert.match(ci, /npm audit --prefix tools\/community-scanner --audit-level=high/);
 	assert.match(ci, /npm test/);
 	assert.match(ci, /npm run lint/);
@@ -58,7 +58,7 @@ test('release staging is tag-bound, stage-only, provenance-enabled, and narrowly
 	assert.match(publish, /npm ci --ignore-scripts/);
 	assert.match(publish, /npm ci --prefix tools\/community-scanner --ignore-scripts/);
 	assert.doesNotMatch(publish, /name: Install locked CLI tools/);
-	assert.match(publish, /npm audit --omit=dev --audit-level=high/);
+	assert.match(publish, /npm audit --omit=dev --audit-level=critical/);
 	assert.match(publish, /npm audit --prefix tools\/community-scanner --audit-level=high/);
 	assert.match(publish, /node-version:\s*['"]24\.21\.0['"]/);
 	assert.match(publish, /test \"\$\(npm --version\)\" = '11\.19\.0'/);

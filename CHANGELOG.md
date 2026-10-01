@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.9
+
+- Update Codex categories in `Media2Url.node.json` to supported n8n categories (`Development`, `Data & Storage`) per community vetting review feedback.
+
 ## 0.2.8
 
 - Update Codex categories in `Media2Url.node.json` to supported n8n categories (`Development`, `Data & Storage`) per community vetting feedback.
