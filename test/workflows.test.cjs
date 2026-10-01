@@ -90,6 +90,7 @@ test('the pinned n8n scanner analyzes the built package locally', () => {
 	assert.equal(scannerPackage.overrides.lodash, '4.18.1');
 	assert.equal(scannerPackage.overrides.uuid, '11.1.1');
 	assert.equal(scannerPackage.overrides['n8n-workflow'], '2.16.0');
+	assert.equal(scannerPackage.overrides.axios, '1.20.0');
 	assert.equal(packageJson.scripts['scan:community'], 'node scripts/scan-community.cjs');
 	for (const script of ['prepare', 'prepack', 'prepublishOnly', 'postpack']) {
 		assert.equal(packageJson.scripts[script], undefined, `npm staging must not execute a ${script} lifecycle script`);
