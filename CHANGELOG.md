@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.12
+
+- Update Codex `node` field to fully-qualified identifier format `n8n-nodes-media2url.media2Url` in `Media2Url.node.json`.
+- Restrict Codex `categories` to supported n8n categories (`Development`, `Data & Storage`) and remove unsupported entries.
+- Synchronize GitHub repository default branch and tag with npm package release.
+
 ## 0.2.11
 
 - Update Codex `node` field to fully-qualified identifier format `n8n-nodes-media2url.media2Url` in `Media2Url.node.json`.
