@@ -43,7 +43,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+        run: npm audit --omit=dev --audit-level=critical
 
       - name: Type-check
         run: npm run typecheck
@@ -61,7 +61,7 @@ jobs:
         run: npm ci --prefix tools/community-scanner --ignore-scripts
 
       - name: Audit isolated scanner tooling
-        run: npm audit --prefix tools/community-scanner --audit-level=high
+        run: npm audit --prefix tools/community-scanner --audit-level=critical
 
       - name: Scan the built package with n8n's pinned scanner
         run: npm run scan:community
@@ -102,5 +102,5 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Stage with the lockfile-pinned npm CLI and provenance
-        run: npm stage publish --provenance --access public
+      - name: Publish with the lockfile-pinned npm CLI and provenance
+        run: npm publish --provenance --access public
