@@ -1,2 +1,9 @@
 dist
 node_modules
+npm_recovery_codes.txt
+recordings/
+scratch/
+.DS_Store
+*.DS_Store
+
+

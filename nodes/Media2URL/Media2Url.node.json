@@ -1,8 +1,8 @@
 {
-	"node": "n8n-nodes-media2url",
+	"node": "n8n-nodes-media2url.media2Url",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
-	"categories": ["Development", "Developer Tools"],
+	"categories": ["Development", "Data & Storage"],
 	"resources": {
 		"credentialDocumentation": [
 			{

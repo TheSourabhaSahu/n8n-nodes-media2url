@@ -26,7 +26,6 @@ export class Media2URL implements INodeType {
 			{
 				name: 'media2URLApi',
 				required: true,
-				testedBy: 'media2URLApi',
 			},
 		],
 		properties: [
