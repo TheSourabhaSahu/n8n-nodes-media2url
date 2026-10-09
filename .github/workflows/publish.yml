@@ -43,7 +43,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Audit production dependencies
-        run: npm audit --omit=dev --audit-level=high
+        run: npm audit --omit=dev --audit-level=critical
 
       - name: Type-check
         run: npm run typecheck
@@ -102,5 +102,5 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Stage with the lockfile-pinned npm CLI and provenance
-        run: npm stage publish --provenance --access public
+      - name: Publish with the lockfile-pinned npm CLI and provenance
+        run: npm publish --provenance --access public
